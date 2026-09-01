@@ -1,0 +1,50 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+
+      <h1 class="mb-4">Plan your trip ✈️</h1>
+
+      <% if @trip.errors.any? %>
+  <div class="alert alert-danger">
+    <h4><%= pluralize(@trip.errors.count, "error") %> prevented the trip from being created:</h4>
+
+    <ul>
+      <% @trip.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+      <%= simple_form_for @trip do |f| %>
+        <%= f.input :title, label: "Trip name", placeholder: "Paris Weekend" %>
+
+        <%= f.input :description,
+                    label: "Description",
+                    placeholder: "A fun weekend in Paris with friends" %>
+
+        <div class="row">
+          <div class="col-md-6">
+            <%= f.input :start_date, label: "Start date" %>
+          </div>
+
+          <div class="col-md-6">
+            <%= f.input :end_date, label: "End date" %>
+          </div>
+        </div>
+
+        <%= f.input :budget,
+                    label: "Budget (€)",
+                    input_html: { min: 0, step: 1 } %>
+
+        <%= f.input :travel_style,
+                    label: "Travel style",
+                    collection: ["Budget", "Balanced", "Luxury"],
+                    prompt: "Choose your travel style" %>
+
+        <%= f.submit "Create Trip", class: "btn btn-primary w-100 mt-3" %>
+      <% end %>
+
+    </div>
+  </div>
+</div>
