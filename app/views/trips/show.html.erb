@@ -1,0 +1,43 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8">
+
+      <div class="card shadow-sm">
+        <div class="card-body">
+
+          <h1 class="mb-3"><%= @trip.title %></h1>
+
+          <p class="text-muted">
+            <%= @trip.description %>
+          </p>
+
+          <hr>
+
+          <p>
+            <strong>Dates:</strong>
+            <%= @trip.start_date.strftime("%d %B %Y") %>
+            –
+            <%= @trip.end_date.strftime("%d %B %Y") %>
+          </p>
+
+          <p>
+            <strong>Budget:</strong>
+            €<%= @trip.budget %>
+          </p>
+
+          <p>
+            <strong>Travel style:</strong>
+            <%= @trip.travel_style %>
+          </p>
+
+          <div class="mt-4">
+            <%= link_to "Edit trip", edit_trip_path(@trip), class: "btn btn-outline-primary" %>
+            <%= link_to "My trips", trips_path, class: "btn btn-secondary" %>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
