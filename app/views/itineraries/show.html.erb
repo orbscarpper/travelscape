@@ -1,6 +1,10 @@
 <div class="container py-5">
   <h1><%= @trip.title %> — Itinerary ✈️</h1>
 
+  <%= link_to "Edit itinerary",
+            edit_trip_itinerary_path(@trip),
+            class: "btn btn-primary mt-4" %>
+
   <% @itinerary_days.each do |day| %>
     <div class="card mt-4">
       <div class="card-body">
