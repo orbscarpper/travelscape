@@ -1,0 +1,37 @@
+<div class="container py-5">
+  <h1><%= @trip.title %> — Itinerary ✈️</h1>
+
+  <%= link_to "Edit itinerary",
+            edit_trip_itinerary_path(@trip),
+            class: "btn btn-primary mt-4" %>
+
+  <% @itinerary_days.each do |day| %>
+    <div class="card mt-4">
+      <div class="card-body">
+        <h2><%= day.title %></h2>
+        <p><%= day.date.strftime("%d %B %Y") %></p>
+
+        <% day.activities.each do |activity| %>
+          <div class="border-top pt-3 mt-3">
+            <strong>
+              <%= activity.start_time.strftime("%H:%M") %>
+              –
+              <%= activity.end_time.strftime("%H:%M") %>
+            </strong>
+
+            <p class="mb-1">
+              📍 <%= activity.location %>
+            </p>
+
+            <p>
+              Estimated cost: €<%= activity.estimated_cost %>
+            </p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%= link_to "Back to trip", trip_path(@trip),
+              class: "btn btn-outline-primary mt-4" %>
+</div>
