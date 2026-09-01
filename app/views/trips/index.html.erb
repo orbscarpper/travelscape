@@ -1,0 +1,59 @@
+<div class="container py-5">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>My Trips ✈️</h1>
+
+    <%= link_to "Create new trip", new_trip_path, class: "btn btn-primary" %>
+  </div>
+
+  <% if @trips.any? %>
+
+    <div class="row">
+      <% @trips.each do |trip| %>
+        <div class="col-md-6 col-lg-4 mb-4">
+
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+
+              <h3 class="card-title">
+                <%= trip.title %>
+              </h3>
+
+              <p class="card-text">
+                <%= trip.description %>
+              </p>
+
+              <p>
+                <strong>Dates:</strong><br>
+                <%= trip.start_date.strftime("%d %B %Y") %>
+                –
+                <%= trip.end_date.strftime("%d %B %Y") %>
+              </p>
+
+              <p>
+                <strong>Budget:</strong>
+                €<%= trip.budget %>
+              </p>
+
+              <%= link_to "View trip",
+                          trip_path(trip),
+                          class: "btn btn-outline-primary" %>
+
+            </div>
+          </div>
+
+        </div>
+      <% end %>
+    </div>
+
+  <% else %>
+
+    <p>You don't have any trips yet.</p>
+
+    <%= link_to "Create your first trip",
+                new_trip_path,
+                class: "btn btn-primary" %>
+
+  <% end %>
+
+</div>
