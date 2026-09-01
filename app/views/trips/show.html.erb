@@ -5,6 +5,11 @@
       <div class="card shadow-sm">
         <div class="card-body">
 
+        <%= button_to "Generate itinerary",
+              trip_itinerary_path(@trip),
+              method: :post,
+              class: "btn btn-primary mt-3" %>
+
           <h1 class="mb-3"><%= @trip.title %></h1>
 
           <p class="text-muted">
