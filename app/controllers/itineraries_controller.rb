@@ -110,6 +110,7 @@ class ItinerariesController < ApplicationController
       End date: #{@trip.end_date}
       Budget: €#{@trip.budget}
       Travel style: #{@trip.travel_style}
+      Travelling with: #{@trip.traveling_with}
 
       Generate one itinerary day for each date from the start date
       to the end date.

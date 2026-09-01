@@ -37,6 +37,11 @@
                     label: "Budget (€)",
                     input_html: { min: 0, step: 1 } %>
 
+               <%= f.input :traveling_with,
+            label: "Who are you travelling with?",
+            collection: ["Solo", "Partner", "Friends", "Family"],
+            prompt: "Choose your travel companions" %>
+                 
         <%= f.input :travel_style,
                     label: "Travel style",
                     collection: ["Budget", "Balanced", "Luxury"],

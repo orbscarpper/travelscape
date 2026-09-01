@@ -53,7 +53,8 @@ class TripsController < ApplicationController
       :start_date,
       :end_date,
       :budget,
-      :travel_style
+      :travel_style,
+      :traveling_with
     )
   end
 end
