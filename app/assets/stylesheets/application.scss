@@ -52,9 +52,11 @@
 
 .navbar-button {
   background: #18221b;
-  color: white !important;
+  color: white;
   padding: 10px 18px;
+  border: none;
   border-radius: 50px;
+  cursor: pointer;
 }
 
 .navbar-button:hover {
