@@ -1,60 +1,753 @@
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-12 col-md-8">
+<div class="trip-page">
 
-      <div class="card shadow-sm">
-        <div class="card-body">
+  <!-- Header -->
+  <div class="trip-header">
+    <div class="header-inner">
 
-          <h1 class="mb-3"><%= @trip.title %></h1>
+      <%= link_to "← My trips", trips_path, class: "back-link" %>
 
-          <p class="text-muted">
-            <%= @trip.description %>
-          </p>
+      <div class="trip-badge">
+        ✦ Your adventure
+      </div>
 
-          <hr>
+      <h1><%= @trip.title %></h1>
 
-          <p>
-            <strong>Dates:</strong>
+      <% if @trip.description.present? %>
+        <p class="trip-description">
+          <%= @trip.description %>
+        </p>
+      <% end %>
+
+    </div>
+  </div>
+
+
+  <!-- Main Content -->
+  <div class="trip-container">
+
+    <!-- Trip Details -->
+    <div class="details-grid">
+
+      <div class="detail-card">
+        <div class="detail-icon">📅</div>
+
+        <div>
+          <span class="detail-label">Dates</span>
+
+          <strong>
             <%= @trip.start_date.strftime("%d %B %Y") %>
             –
             <%= @trip.end_date.strftime("%d %B %Y") %>
-          </p>
+          </strong>
+        </div>
+      </div>
 
-          <p>
-            <strong>Budget:</strong>
+
+      <div class="detail-card">
+        <div class="detail-icon">💰</div>
+
+        <div>
+          <span class="detail-label">Budget</span>
+
+          <strong>
             €<%= @trip.budget %>
-          </p>
+          </strong>
+        </div>
+      </div>
 
-          <p>
-            <strong>Travel style:</strong>
-            <%= @trip.travel_style %>
-          </p>
 
-          <p>
-  <strong>Travelling with:</strong>
-  <%= @trip.traveling_with %>
-</p>
+      <div class="detail-card">
+        <div class="detail-icon">✨</div>
 
-          <div class="mt-4">
+        <div>
+          <span class="detail-label">Travel style</span>
 
-            <%= button_to "Generate itinerary",
-                          trip_itinerary_path(@trip),
-                          method: :post,
-                          class: "btn btn-primary" %>
+          <strong>
+            <%= @trip.travel_style.presence || "Not specified" %>
+          </strong>
+        </div>
+      </div>
 
-            <%= link_to "Edit itinerary",
-                        edit_trip_itinerary_path(@trip),
-                        class: "btn btn-outline-primary mt-2" %>
 
-            <%= link_to "My trips",
-                        trips_path,
-                        class: "btn btn-secondary mt-2" %>
+      <div class="detail-card">
+        <div class="detail-icon">👥</div>
 
-          </div>
+        <div>
+          <span class="detail-label">Travelling with</span>
 
+          <strong>
+            <%= @trip.traveling_with.presence || "Not specified" %>
+          </strong>
         </div>
       </div>
 
     </div>
+
+
+    <!-- Itinerary -->
+    <div class="itinerary-section">
+
+      <div class="section-heading">
+
+        <div>
+          <span class="section-badge">
+            ✦ AI PLANNER
+          </span>
+
+          <h2>Your itinerary</h2>
+
+          <p>
+            Your personalized travel plan.
+          </p>
+        </div>
+
+
+        <% if @trip.itinerary_days.any? %>
+
+          <%= button_to "↻ Regenerate",
+                        trip_itinerary_path(@trip),
+                        method: :post,
+                        class: "regenerate-button" %>
+
+        <% end %>
+
+      </div>
+
+
+      <% if @trip.itinerary_days.any? %>
+
+        <!-- Days -->
+
+        <div class="days-list">
+
+          <% @trip.itinerary_days.each_with_index do |day, index| %>
+
+            <div class="day-card">
+
+              <!-- Day Header -->
+
+              <div class="day-header">
+
+                <div class="day-number">
+
+                  <span>DAY</span>
+
+                  <strong>
+                    <%= index + 1 %>
+                  </strong>
+
+                </div>
+
+
+                <div class="day-title">
+
+                  <h3>
+                    Day <%= index + 1 %>
+                  </h3>
+
+                  <% if day.respond_to?(:date) && day.date.present? %>
+
+                    <p>
+                      <%= day.date.strftime("%A, %d %B %Y") %>
+                    </p>
+
+                  <% end %>
+
+                </div>
+
+              </div>
+
+
+              <!-- Activities -->
+
+              <% if day.respond_to?(:activities) && day.activities.any? %>
+
+                <div class="activities-list">
+
+                  <% day.activities.each do |activity| %>
+
+                    <div class="activity-card">
+
+                      <div class="activity-dot"></div>
+
+
+                      <div class="activity-content">
+
+                        <!-- Location -->
+
+                        <% if activity.location.present? %>
+
+                          <h4>
+                            📍 <%= activity.location %>
+                          </h4>
+
+                        <% else %>
+
+                          <h4>
+                            Activity
+                          </h4>
+
+                        <% end %>
+
+
+                        <!-- Time -->
+
+                        <% if activity.start_time.present? || activity.end_time.present? %>
+
+                          <div class="activity-time">
+
+                            <% if activity.start_time.present? %>
+                              <%= activity.start_time.strftime("%H:%M") %>
+                            <% end %>
+
+                            <% if activity.start_time.present? && activity.end_time.present? %>
+                              –
+                            <% end %>
+
+                            <% if activity.end_time.present? %>
+                              <%= activity.end_time.strftime("%H:%M") %>
+                            <% end %>
+
+                          </div>
+
+                        <% end %>
+
+
+                        <!-- Cost -->
+
+                        <% if activity.estimated_cost.present? %>
+
+                          <div class="activity-cost">
+
+                            💶 Estimated cost:
+                            €<%= activity.estimated_cost %>
+
+                          </div>
+
+                        <% end %>
+
+                      </div>
+
+                    </div>
+
+                  <% end %>
+
+                </div>
+
+
+              <% else %>
+
+                <div class="no-activities">
+
+                  <p>
+                    No activities have been added for this day yet.
+                  </p>
+
+                </div>
+
+              <% end %>
+
+            </div>
+
+          <% end %>
+
+        </div>
+
+
+      <% else %>
+
+        <!-- Empty Itinerary -->
+
+        <div class="empty-itinerary">
+
+          <div class="empty-icon">
+            ✈️
+          </div>
+
+          <h3>
+            Your itinerary is waiting
+          </h3>
+
+          <p>
+            Let our AI planner create a personalized itinerary
+            based on your trip details.
+          </p>
+
+
+          <%= button_to "Generate my itinerary →",
+                        trip_itinerary_path(@trip),
+                        method: :post,
+                        class: "generate-button" %>
+
+        </div>
+
+      <% end %>
+
+    </div>
+
+
+    <!-- Bottom Navigation -->
+
+    <div class="bottom-actions">
+
+      <%= link_to "← Back to my trips",
+                  trips_path,
+                  class: "secondary-button" %>
+
+    </div>
+
   </div>
+
 </div>
+
+
+<style>
+
+  * {
+    box-sizing: border-box;
+  }
+
+
+  body {
+    margin: 0;
+  }
+
+
+  .trip-page {
+    min-height: 100vh;
+    background: #f6f7f3;
+    color: #18221b;
+    padding-bottom: 80px;
+  }
+
+
+  /* HEADER */
+
+  .trip-header {
+    background: #18221b;
+    color: white;
+    padding: 70px 20px 80px;
+  }
+
+
+  .header-inner {
+    max-width: 1050px;
+    margin: 0 auto;
+  }
+
+
+  .back-link {
+    display: inline-block;
+    color: #d7dfd7;
+    text-decoration: none;
+    margin-bottom: 45px;
+    font-size: 15px;
+  }
+
+
+  .back-link:hover {
+    color: white;
+  }
+
+
+  .trip-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 50px;
+    padding: 8px 14px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+
+  .trip-header h1 {
+    font-size: clamp(42px, 7vw, 72px);
+    line-height: 1;
+    margin: 0 0 20px;
+    font-weight: 700;
+    letter-spacing: -2px;
+  }
+
+
+  .trip-description {
+    max-width: 650px;
+    font-size: 18px;
+    line-height: 1.7;
+    color: #c8d0c9;
+    margin: 0;
+  }
+
+
+  /* CONTAINER */
+
+  .trip-container {
+    max-width: 1050px;
+    margin: -35px auto 0;
+    padding: 0 20px;
+    position: relative;
+  }
+
+
+  /* DETAILS */
+
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 70px;
+  }
+
+
+  .detail-card {
+    background: white;
+    border-radius: 18px;
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+  }
+
+
+  .detail-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: #edf2e9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    flex-shrink: 0;
+  }
+
+
+  .detail-label {
+    display: block;
+    font-size: 11px;
+    color: #7b837d;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 5px;
+  }
+
+
+  .detail-card strong {
+    display: block;
+    font-size: 14px;
+  }
+
+
+  /* ITINERARY */
+
+  .itinerary-section {
+    margin-top: 20px;
+  }
+
+
+  .section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 30px;
+    margin-bottom: 30px;
+  }
+
+
+  .section-badge {
+    font-size: 11px;
+    color: #6b8067;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+  }
+
+
+  .section-heading h2 {
+    font-size: 40px;
+    letter-spacing: -1px;
+    margin: 8px 0;
+  }
+
+
+  .section-heading p {
+    color: #737a74;
+    margin: 0;
+    font-size: 16px;
+  }
+
+
+  /* BUTTONS */
+
+  .regenerate-button {
+    border: 1px solid #d9ded7;
+    background: white;
+    color: #28332b;
+    border-radius: 50px;
+    padding: 11px 18px;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+
+  .regenerate-button:hover {
+    background: #edf2e9;
+  }
+
+
+  .generate-button {
+    border: none;
+    background: #18221b;
+    color: white;
+    border-radius: 50px;
+    padding: 15px 25px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+
+  .generate-button:hover {
+    background: #304235;
+  }
+
+
+  .secondary-button {
+    display: inline-block;
+    text-decoration: none;
+    color: #29332c;
+    border: 1px solid #d5dad4;
+    background: white;
+    border-radius: 50px;
+    padding: 13px 20px;
+    font-size: 14px;
+  }
+
+
+  .secondary-button:hover {
+    background: #edf2e9;
+  }
+
+
+  /* DAYS */
+
+  .days-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+
+  .day-card {
+    background: white;
+    border-radius: 22px;
+    padding: 30px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+  }
+
+
+  .day-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #edf0eb;
+  }
+
+
+  .day-number {
+    width: 62px;
+    height: 62px;
+    border-radius: 16px;
+    background: #18221b;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+
+  .day-number span {
+    font-size: 8px;
+    letter-spacing: 1px;
+    opacity: 0.7;
+  }
+
+
+  .day-number strong {
+    font-size: 25px;
+    line-height: 1;
+  }
+
+
+  .day-title h3 {
+    margin: 0 0 5px;
+    font-size: 22px;
+  }
+
+
+  .day-title p {
+    margin: 0;
+    color: #858c86;
+    font-size: 14px;
+  }
+
+
+  /* ACTIVITIES */
+
+  .activities-list {
+    padding-top: 20px;
+  }
+
+
+  .activity-card {
+    display: flex;
+    gap: 18px;
+    padding: 18px 0;
+  }
+
+
+  .activity-card:not(:last-child) {
+    border-bottom: 1px solid #f0f2ef;
+  }
+
+
+  .activity-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #6c8268;
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+
+
+  .activity-content {
+    flex: 1;
+  }
+
+
+  .activity-content h4 {
+    margin: 0 0 7px;
+    font-size: 16px;
+  }
+
+
+  .activity-time {
+    display: inline-block;
+    background: #edf2e9;
+    border-radius: 20px;
+    padding: 5px 10px;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+
+  .activity-cost {
+    color: #737a74;
+    font-size: 13px;
+  }
+
+
+  .no-activities {
+    padding: 25px 0 5px;
+    color: #858c86;
+    font-size: 14px;
+  }
+
+
+  /* EMPTY */
+
+  .empty-itinerary {
+    background: white;
+    border-radius: 25px;
+    padding: 70px 30px;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+  }
+
+
+  .empty-icon {
+    font-size: 45px;
+    margin-bottom: 20px;
+  }
+
+
+  .empty-itinerary h3 {
+    font-size: 26px;
+    margin: 0 0 12px;
+  }
+
+
+  .empty-itinerary p {
+    max-width: 550px;
+    margin: 0 auto 30px;
+    color: #737a74;
+    line-height: 1.7;
+  }
+
+
+  /* BOTTOM */
+
+  .bottom-actions {
+    margin-top: 40px;
+  }
+
+
+  /* MOBILE */
+
+  @media (max-width: 800px) {
+
+    .details-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+  }
+
+
+  @media (max-width: 600px) {
+
+    .trip-header {
+      padding: 45px 20px 65px;
+    }
+
+
+    .trip-header h1 {
+      font-size: 44px;
+    }
+
+
+    .trip-container {
+      padding: 0 15px;
+    }
+
+
+    .details-grid {
+      grid-template-columns: 1fr;
+      margin-bottom: 50px;
+    }
+
+
+    .section-heading {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+
+    .section-heading h2 {
+      font-size: 34px;
+    }
+
+
+    .day-card {
+      padding: 22px;
+    }
+
+  }
+
+</style>

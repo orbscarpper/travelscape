@@ -24,6 +24,31 @@
   </head>
 
   <body>
-    <%= yield %>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+
+      <%= link_to "Travelscape", root_path, class: "navbar-logo" %>
+
+      <div class="navbar-links">
+
+        <%= link_to "Home", root_path %>
+
+        <%= link_to "My Trips", trips_path %>
+
+        <%= link_to "New Trip",
+                    new_trip_path,
+                    class: "navbar-button" %>
+
+      </div>
+
+    </nav>
+
+
+    <!-- PAGE CONTENT -->
+    <main>
+      <%= yield %>
+    </main>
+
   </body>
 </html>
