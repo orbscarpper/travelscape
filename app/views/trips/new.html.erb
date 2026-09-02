@@ -1,55 +1,243 @@
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-12 col-md-8 col-lg-6">
+<<div class="trip-page">
 
-      <h1 class="mb-4">Plan your trip ✈️</h1>
+  <div class="trip-container">
 
-      <% if @trip.errors.any? %>
-  <div class="alert alert-danger">
-    <h4><%= pluralize(@trip.errors.count, "error") %> prevented the trip from being created:</h4>
+    <div class="trip-header">
+      <span class="trip-badge">✦ Plan your adventure</span>
 
-    <ul>
-      <% @trip.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-    </ul>
-  </div>
-<% end %>
+      <h1>Create your trip</h1>
+
+      <p>
+        Tell us a little about your trip and we'll help you
+        create the perfect itinerary.
+      </p>
+    </div>
+
+
+    <% if @trip.errors.any? %>
+      <div class="alert alert-danger">
+        <h4>
+          <%= pluralize(@trip.errors.count, "error") %>
+          prevented your trip from being created:
+        </h4>
+
+        <ul>
+          <% @trip.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+
+    <div class="trip-card">
 
       <%= simple_form_for @trip do |f| %>
-        <%= f.input :title, label: "Trip name", placeholder: "Paris Weekend" %>
+
+        <%= f.input :title,
+                    label: "Trip name",
+                    placeholder: "Paris Weekend" %>
+
 
         <%= f.input :description,
-                    label: "Description",
+                    label: "Tell us about your trip",
                     placeholder: "A fun weekend in Paris with friends" %>
 
+
+        <div class="form-section-title">
+          📅 When are you travelling?
+        </div>
+
         <div class="row">
+
           <div class="col-md-6">
-            <%= f.input :start_date, label: "Start date" %>
+            <%= f.input :start_date,
+                        label: "Start date" %>
           </div>
 
           <div class="col-md-6">
-            <%= f.input :end_date, label: "End date" %>
+            <%= f.input :end_date,
+                        label: "End date" %>
           </div>
+
+        </div>
+
+
+        <div class="form-section-title">
+          💰 What's your budget?
         </div>
 
         <%= f.input :budget,
                     label: "Budget (€)",
-                    input_html: { min: 0, step: 1 } %>
+                    input_html: {
+                      min: 0,
+                      step: 1,
+                      placeholder: "1000"
+                    } %>
 
-               <%= f.input :traveling_with,
-            label: "Who are you travelling with?",
-            collection: ["Solo", "Partner", "Friends", "Family"],
-            prompt: "Choose your travel companions" %>
-                 
+
+        <div class="form-section-title">
+          👥 Who are you travelling with?
+        </div>
+
+        <%= f.input :traveling_with,
+                    label: false,
+                    collection: ["Solo", "Partner", "Friends", "Family"],
+                    prompt: "Choose your travel companions" %>
+
+
+        <div class="form-section-title">
+          ✨ What's your travel style?
+        </div>
+
         <%= f.input :travel_style,
-                    label: "Travel style",
+                    label: false,
                     collection: ["Budget", "Balanced", "Luxury"],
                     prompt: "Choose your travel style" %>
 
-        <%= f.submit "Create Trip", class: "btn btn-primary w-100 mt-3" %>
+
+        <%= f.submit "Create my trip →",
+                     class: "create-trip-button" %>
+
       <% end %>
 
     </div>
+
   </div>
+
 </div>
+
+
+<style>
+
+  .trip-page {
+    min-height: 100vh;
+    background: #f6f8f7;
+    padding: 70px 20px;
+  }
+
+
+  .trip-container {
+    max-width: 750px;
+    margin: 0 auto;
+  }
+
+
+  .trip-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+
+  .trip-badge {
+    display: inline-block;
+    background: #e7f3ee;
+    color: #267a5b;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
+
+
+  .trip-header h1 {
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: -2px;
+    color: #17221e;
+    margin-bottom: 15px;
+  }
+
+
+  .trip-header p {
+    max-width: 550px;
+    margin: 0 auto;
+    color: #6b756f;
+    font-size: 17px;
+    line-height: 1.6;
+  }
+
+
+  .trip-card {
+    background: white;
+    padding: 45px;
+    border-radius: 24px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.07);
+  }
+
+
+  .trip-card .form-label {
+    font-weight: 600;
+    color: #29342f;
+  }
+
+
+  .trip-card .form-control,
+  .trip-card .form-select {
+    border: 1px solid #dce3df;
+    border-radius: 12px;
+    padding: 13px 15px;
+    margin-bottom: 8px;
+  }
+
+
+  .trip-card .form-control:focus,
+  .trip-card .form-select:focus {
+    border-color: #4c9b7a;
+    box-shadow: 0 0 0 3px rgba(76, 155, 122, 0.12);
+  }
+
+
+  .form-section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #29342f;
+    margin-top: 25px;
+    margin-bottom: 12px;
+  }
+
+
+  .create-trip-button {
+    width: 100%;
+    border: none;
+    background: #17221e;
+    color: white;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 25px;
+    transition: all 0.2s ease;
+  }
+
+
+  .create-trip-button:hover {
+    background: #267a5b;
+    transform: translateY(-2px);
+  }
+
+
+  .alert {
+    border-radius: 14px;
+    margin-bottom: 25px;
+  }
+
+
+  @media (max-width: 600px) {
+
+    .trip-page {
+      padding: 40px 15px;
+    }
+
+    .trip-card {
+      padding: 25px;
+    }
+
+    .trip-header h1 {
+      font-size: 38px;
+    }
+
+  }
+
+</style>

@@ -10,3 +10,53 @@
 // Your CSS partials
 @import "components/index";
 @import "pages/index";
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  height: 72px;
+  padding: 0 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: white;
+  border-bottom: 1px solid #e5e8e3;
+}
+
+.navbar-logo {
+  color: #18221b;
+  text-decoration: none;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.navbar-links a {
+  color: #4c554e;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.navbar-links a:hover {
+  color: #18221b;
+}
+
+.navbar-button {
+  background: #18221b;
+  color: white !important;
+  padding: 10px 18px;
+  border-radius: 50px;
+}
+
+.navbar-button:hover {
+  background: #304235 !important;
+}

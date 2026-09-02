@@ -1,2 +1,393 @@
-<h1>Pages#home</h1>
-<p>Find me in app/views/pages/home.html.erb</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travelscape — Your AI Travel Planner</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #1f2937;
+      background: #f8fafc;
+    }
+
+    .hero {
+      min-height: 100vh;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(0, 0, 0, 0.65),
+          rgba(0, 0, 0, 0.25)
+        ),
+        url("https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=2000&q=80");
+
+      background-size: cover;
+      background-position: center;
+
+      display: flex;
+      flex-direction: column;
+    }
+
+    .navbar {
+      width: 100%;
+      padding: 28px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -1px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-size: 15px;
+    }
+
+    .nav-links a:hover {
+      opacity: 0.75;
+    }
+
+    .login {
+      border: 1px solid rgba(255,255,255,0.7);
+      padding: 10px 20px;
+      border-radius: 30px;
+    }
+
+    .hero-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding: 80px 7%;
+      color: white;
+    }
+
+    .hero-text {
+      max-width: 700px;
+    }
+
+    .tag {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-size: 14px;
+      margin-bottom: 25px;
+    }
+
+    h1 {
+      font-size: clamp(48px, 7vw, 90px);
+      line-height: 0.95;
+      letter-spacing: -4px;
+      margin-bottom: 30px;
+    }
+
+    .hero-text p {
+      font-size: 20px;
+      line-height: 1.6;
+      max-width: 600px;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 40px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .primary-button {
+      background: white;
+      color: #111827;
+      padding: 16px 28px;
+      border-radius: 40px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .primary-button:hover {
+      transform: translateY(-2px);
+    }
+
+    .secondary-button {
+      border: 1px solid rgba(255,255,255,0.7);
+      color: white;
+      padding: 16px 28px;
+      border-radius: 40px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .features {
+      background: white;
+      padding: 100px 7%;
+    }
+
+    .features-title {
+      text-align: center;
+      max-width: 650px;
+      margin: 0 auto 60px;
+    }
+
+    .features-title h2 {
+      font-size: 42px;
+      letter-spacing: -2px;
+      margin-bottom: 15px;
+    }
+
+    .features-title p {
+      color: #6b7280;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .feature {
+      padding: 35px;
+      border-radius: 20px;
+      background: #f8fafc;
+    }
+
+    .feature-icon {
+      font-size: 35px;
+      margin-bottom: 20px;
+    }
+
+    .feature h3 {
+      font-size: 21px;
+      margin-bottom: 12px;
+    }
+
+    .feature p {
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    .cta {
+      background: #111827;
+      color: white;
+      text-align: center;
+      padding: 100px 20px;
+    }
+
+    .cta h2 {
+      font-size: 45px;
+      letter-spacing: -2px;
+      margin-bottom: 20px;
+    }
+
+    .cta p {
+      color: #9ca3af;
+      font-size: 18px;
+      margin-bottom: 35px;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        gap: 12px;
+      }
+
+      .nav-links a:not(.login) {
+        display: none;
+      }
+
+      h1 {
+        letter-spacing: -2px;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-content {
+        padding-top: 40px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HERO -->
+
+  <section class="hero">
+
+    <nav class="navbar">
+
+      <div class="logo">
+        Travelscape
+      </div>
+
+      <div class="nav-links">
+        <a href="#features">How it works</a>
+        <a href="#about">About</a>
+
+        <%= link_to "Log in", new_user_session_path, class: "login" %>
+      </div>
+
+    </nav>
+
+
+    <div class="hero-content">
+
+      <div class="hero-text">
+
+        <span class="tag">
+          ✦ AI-powered travel planning
+        </span>
+
+        <h1>
+          Travel better.<br>
+          Explore more.
+        </h1>
+
+        <p>
+          Tell Travelscape where you want to go, what you love,
+          and how long you're staying. Our AI creates a personalized
+          itinerary made just for you.
+        </p>
+
+        <div class="buttons">
+
+          <%= link_to "Plan my trip →",
+              new_trip_path,
+              class: "primary-button" %>
+
+          <a href="#features" class="secondary-button">
+            Discover Travelscape
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- FEATURES -->
+
+  <section class="features" id="features">
+
+    <div class="features-title">
+
+      <h2>
+        Your trip, intelligently planned.
+      </h2>
+
+      <p>
+        Stop spending hours searching for what to do.
+        Travelscape turns your ideas into a complete travel plan.
+      </p>
+
+    </div>
+
+
+    <div class="feature-grid">
+
+      <div class="feature">
+
+        <div class="feature-icon">
+          ✨
+        </div>
+
+        <h3>
+          AI Itineraries
+        </h3>
+
+        <p>
+          Get a personalized day-by-day itinerary based
+          on your destination, interests and travel style.
+        </p>
+
+      </div>
+
+
+      <div class="feature">
+
+        <div class="feature-icon">
+          🗺️
+        </div>
+
+        <h3>
+          Discover More
+        </h3>
+
+        <p>
+          Find interesting places, local experiences,
+          restaurants and hidden gems worth exploring.
+        </p>
+
+      </div>
+
+
+      <div class="feature">
+
+        <div class="feature-icon">
+          ❤️
+        </div>
+
+        <h3>
+          Made For You
+        </h3>
+
+        <p>
+          Your itinerary isn't generic. Travelscape adapts
+          your trip to the things you actually enjoy.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- CTA -->
+
+  <section class="cta" id="about">
+
+    <h2>
+      Where will you go next?
+    </h2>
+
+    <p>
+      Let AI help you create your next adventure.
+    </p>
+
+    <%= link_to "Create my itinerary →",
+        new_trip_path,
+        class: "primary-button" %>
+
+  </section>
+
+</body>
+</html>
