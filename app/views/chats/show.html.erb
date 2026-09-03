@@ -1,0 +1,29 @@
+<h1>Chat about <%= @trip.title %></h1>
+
+<%= link_to "← Back to chats", trip_chats_path(@trip) %>
+
+<div class="chat">
+  <% if @messages.any? %>
+    <% @messages.each do |message| %>
+      <div class="message">
+        <strong><%= message.role.capitalize %>:</strong>
+        <p><%= message.content %></p>
+      </div>
+    <% end %>
+  <% else %>
+    <p>No messages yet.</p>
+  <% end %>
+</div>
+
+<hr>
+
+<%= form_with url: trip_chat_messages_path(@trip, @chat),
+              method: :post do |form| %>
+
+  <%= form.text_area :content,
+                     placeholder: "Ask something about your trip...",
+                     rows: 4 %>
+
+  <%= form.submit "Send" %>
+
+<% end %>

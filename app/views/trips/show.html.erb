@@ -18,6 +18,17 @@
         </p>
       <% end %>
 
+      <div class="trip-actions">
+  <%= button_to "Chat with AI",
+                trip_chats_path(@trip),
+                method: :post,
+                class: "btn btn-primary" %>
+
+  <%= link_to "View chats",
+              trip_chats_path(@trip),
+              class: "btn btn-secondary" %>
+</div>
+
     </div>
   </div>
 
