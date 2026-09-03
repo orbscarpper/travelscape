@@ -12,17 +12,9 @@ class MessagesController < ApplicationController
       return
     end
 
-    @chat.with_instructions(system_prompt) if @chat.model_id.present?
+    @chat.with_instructions(system_prompt)
 
-    @chat.messages.create!(
-      role: "user",
-      content: content
-    )
-
-    @chat.messages.create!(
-      role: "assistant",
-      content: "For your first day in Paris, I recommend visiting the Eiffel Tower, walking around the Latin Quarter, and having dinner in Le Marais."
-    )
+    @chat.ask(content)
 
     redirect_to trip_chat_path(@trip, @chat)
   end
