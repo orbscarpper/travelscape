@@ -1,3 +1,6 @@
+require "net/http"
+require "uri"
+
 class ItinerariesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_trip
@@ -54,16 +57,19 @@ class ItinerariesController < ApplicationController
 
     redirect_to trip_itinerary_path(@trip),
                 notice: "Your itinerary has been generated!"
+
   rescue RubyLLM::RateLimitError
     create_demo_itinerary
 
     redirect_to trip_itinerary_path(@trip),
                 notice: "Demo itinerary generated successfully!"
+
   rescue JSON::ParserError
     create_demo_itinerary
 
     redirect_to trip_itinerary_path(@trip),
                 notice: "Demo itinerary generated successfully!"
+
   rescue StandardError => e
     Rails.logger.error "Itinerary generation failed: #{e.class}: #{e.message}"
 
@@ -131,15 +137,51 @@ class ItinerariesController < ApplicationController
       )
 
       day.fetch("activities").each do |activity|
+        location = activity.fetch("location")
+        coordinates = geocode_location(location)
+
         itinerary_day.activities.create!(
           user: current_user,
           start_time: Time.zone.parse(activity.fetch("start_time")),
           end_time: Time.zone.parse(activity.fetch("end_time")),
-          location: activity.fetch("location"),
+          location: location,
+          latitude: coordinates&.first,
+          longitude: coordinates&.last,
           estimated_cost: activity.fetch("estimated_cost")
         )
       end
     end
+  end
+
+  def geocode_location(location)
+    return nil if location.blank?
+
+    url = URI("https://api.mapbox.com/search/geocode/v6/forward")
+
+    params = {
+      q: location,
+      access_token: ENV["MAPBOX_API_KEY"],
+      limit: 1
+    }
+
+    url.query = URI.encode_www_form(params)
+
+    response = Net::HTTP.get_response(url)
+
+    return nil unless response.is_a?(Net::HTTPSuccess)
+
+    data = JSON.parse(response.body)
+
+    feature = data["features"]&.first
+
+    return nil unless feature
+
+    longitude, latitude = feature["geometry"]["coordinates"]
+
+    [latitude, longitude]
+  rescue StandardError => e
+    Rails.logger.error "Geocoding failed for #{location}: #{e.message}"
+    nil
   end
 
   def create_demo_itinerary
