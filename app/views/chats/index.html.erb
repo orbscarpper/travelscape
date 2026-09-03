@@ -1,0 +1,15 @@
+<h1>Chats for <%= @trip.title %></h1>
+
+<%= link_to "Back to trip", trip_path(@trip) %>
+
+<% if @chats.any? %>
+  <ul>
+    <% @chats.each do |chat| %>
+      <li>
+        <%= link_to "Chat ##{chat.id}", trip_chat_path(@trip, chat) %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No chats yet.</p>
+<% end %>
