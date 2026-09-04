@@ -5,6 +5,7 @@ require "json"
 class ItinerariesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_trip
+  before_action :require_itinerary, only: [:show, :edit, :update]
 
   def create
   Rails.logger.info "========== ITINERARY CREATE CALLED =========="
@@ -139,6 +140,15 @@ end
 
   def set_trip
     @trip = current_user.trips.find(params[:trip_id])
+  end
+
+  # Without an itinerary there is nothing to show, edit or update. Rendering
+  # those pages anyway leaves a trip looking like it still has an itinerary:
+  # an empty travel-plan page with edit and delete buttons on it.
+  def require_itinerary
+    return if @trip.itinerary_days.exists?
+
+    redirect_to trip_path(@trip)
   end
 
   def build_prompt
