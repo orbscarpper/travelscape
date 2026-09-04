@@ -113,15 +113,46 @@
         </div>
 
 
-        <% if @trip.itinerary_days.any? %>
+        <div class="itinerary-header-actions">
 
-          <%= button_to "↻ Regenerate",
-                        trip_itinerary_path(@trip),
-                        method: :post,
-                        class: "regenerate-button" %>
+          <% if @trip.itinerary_days.any? %>
+            <%= button_to "↻ Regenerate",
+                          trip_itinerary_path(@trip),
+                          method: :post,
+                          class: "regenerate-button" %>
+          <% end %>
 
-        <% end %>
+          <button type="button"
+                  class="delete-itinerary-button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteTripModal">
+            Delete trip
+          </button>
 
+        </div>
+
+      </div>
+
+      <div class="modal fade" id="deleteTripModal" tabindex="-1" aria-labelledby="deleteTripModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content itinerary-delete-modal">
+            <div class="modal-header">
+              <div class="delete-modal-icon" aria-hidden="true">!</div>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <h2 id="deleteTripModalLabel">Delete this trip?</h2>
+              <p>This will permanently remove <strong><%= @trip.title %></strong>, including its itinerary and any chats. This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="itinerary-cancel-button" data-bs-dismiss="modal">Keep trip</button>
+              <%= button_to "Yes, delete it",
+                            trip_path(@trip),
+                            method: :delete,
+                            class: "itinerary-confirm-delete-button" %>
+            </div>
+          </div>
+        </div>
       </div>
 
 

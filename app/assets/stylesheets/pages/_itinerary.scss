@@ -1,0 +1,260 @@
+.itinerary-page {
+  min-height: 100vh;
+  background: #f6f8f7;
+  padding: 56px 20px 80px;
+}
+
+.itinerary-container {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.itinerary-back-link {
+  color: #6b756f;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.itinerary-back-link:hover {
+  color: #17221e;
+}
+
+.itinerary-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 30px 0 40px;
+}
+
+.itinerary-badge, .day-number {
+  color: #267a5b;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.itinerary-heading h1 {
+  color: #17221e;
+  font-size: 44px;
+  letter-spacing: -1.5px;
+  margin: 10px 0 8px;
+}
+
+.itinerary-heading p {
+  color: #6b756f;
+  margin: 0;
+}
+
+.itinerary-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.itinerary-edit-button, .itinerary-delete-button {
+  border: 0;
+  border-radius: 10px;
+  padding: 11px 16px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.itinerary-edit-button {
+  background: #17221e;
+  color: white;
+}
+
+.itinerary-edit-button:hover {
+  background: #267a5b;
+  color: white;
+}
+
+.itinerary-delete-button {
+  background: #fff0ef;
+  color: #b3443d;
+}
+
+.itinerary-delete-button:hover {
+  background: #fbdedb;
+}
+
+.itinerary-header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.delete-itinerary-button, .trip-delete-button {
+  background: #fff0ef;
+  border: 0;
+  border-radius: 10px;
+  color: #b3443d;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 11px 16px;
+}
+
+.delete-itinerary-button:hover, .trip-delete-button:hover {
+  background: #fbdedb;
+}
+
+.trip-delete-button {
+  margin-top: 10px;
+  width: 100%;
+}
+
+.itinerary-day-card {
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 8px 30px rgba(23, 34, 30, 0.06);
+  margin-top: 20px;
+  padding: 26px 30px;
+}
+
+.itinerary-day-heading {
+  align-items: start;
+  border-bottom: 1px solid #edf0ee;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 18px;
+}
+
+.itinerary-day-heading h2 {
+  color: #17221e;
+  font-size: 24px;
+  margin: 7px 0 0;
+}
+
+.itinerary-day-heading time {
+  color: #8a938e;
+  font-size: 14px;
+}
+
+.itinerary-activity {
+  align-items: start;
+  border-bottom: 1px solid #edf0ee;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 125px 1fr;
+  padding: 18px 0;
+}
+
+.itinerary-activity:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.itinerary-activity strong {
+  color: #267a5b;
+  font-size: 14px;
+}
+
+.itinerary-activity p {
+  color: #29342f;
+  margin: 0 0 4px;
+  font-weight: 600;
+}
+
+.itinerary-activity small {
+  color: #8a938e;
+}
+
+.itinerary-delete-modal {
+  border: 0;
+  border-radius: 18px;
+  padding: 10px;
+}
+
+.delete-modal-icon {
+  align-items: center;
+  background: #fff0ef;
+  border-radius: 12px;
+  color: #b3443d;
+  display: flex;
+  font-size: 20px;
+  font-weight: 700;
+  height: 42px;
+  justify-content: center;
+  width: 42px;
+}
+
+.itinerary-delete-modal .modal-header {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.itinerary-delete-modal h2 {
+  color: #17221e;
+  font-size: 24px;
+}
+
+.itinerary-delete-modal p {
+  color: #6b756f;
+  line-height: 1.6;
+}
+
+.itinerary-delete-modal .modal-footer {
+  border-top: 0;
+  gap: 8px;
+}
+
+.itinerary-cancel-button, .itinerary-confirm-delete-button {
+  border: 0;
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 11px 16px;
+}
+
+.itinerary-cancel-button {
+  background: #f5f7f6;
+  color: #29342f;
+}
+
+.itinerary-confirm-delete-button {
+  background: #b3443d;
+  color: white;
+}
+
+.itinerary-confirm-delete-button:hover {
+  background: #963832;
+}
+
+@media (max-width: 650px) {
+  .itinerary-heading {
+    align-items: start;
+    display: block;
+  }
+
+  .itinerary-heading h1 {
+    font-size: 36px;
+  }
+
+  .itinerary-actions {
+    margin-top: 24px;
+  }
+
+  .itinerary-header-actions {
+    flex-wrap: wrap;
+  }
+
+  .itinerary-day-card {
+    padding: 22px 20px;
+  }
+
+  .itinerary-day-heading {
+    display: block;
+  }
+
+  .itinerary-day-heading time {
+    display: block;
+    margin-top: 8px;
+  }
+
+  .itinerary-activity {
+    gap: 10px;
+    grid-template-columns: 1fr;
+  }
+}
