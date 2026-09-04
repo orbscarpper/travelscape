@@ -7,3 +7,7 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+# RubyLLM resolves model ids (e.g. "gpt-5-nano") against the models table, so it
+# has to be populated before any chat can be created.
+Model.refresh!
