@@ -1,0 +1,56 @@
+<%# Progress overlay for AI itinerary generation. Driven by the
+    itinerary-loader Stimulus controller on the surrounding element. %>
+
+<div class="itinerary-loader"
+     data-itinerary-loader-target="overlay"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="itinerary-loader-heading"
+     hidden>
+
+  <div class="itinerary-loader-card">
+
+    <div class="itinerary-loader-icon" aria-hidden="true">
+      <span data-itinerary-loader-target="icon">🧭</span>
+    </div>
+
+    <span class="itinerary-loader-badge">✦ AI PLANNER</span>
+
+    <h2 id="itinerary-loader-heading"
+        data-itinerary-loader-target="heading">
+      Building your itinerary
+    </h2>
+
+    <p class="itinerary-loader-status"
+       data-itinerary-loader-target="status"
+       aria-live="polite">
+      Reading your trip details…
+    </p>
+
+    <div class="itinerary-loader-track"
+         role="progressbar"
+         aria-label="Itinerary generation progress"
+         aria-valuemin="0"
+         aria-valuemax="100"
+         aria-valuenow="0">
+
+      <div class="itinerary-loader-bar"
+           data-itinerary-loader-target="bar"></div>
+
+    </div>
+
+    <div class="itinerary-loader-meta">
+      <span class="itinerary-loader-percent"
+            data-itinerary-loader-target="percent">0%</span>
+
+      <span data-itinerary-loader-target="elapsed">0:00 elapsed</span>
+    </div>
+
+    <p class="itinerary-loader-note">
+      Our planner is checking real places, opening times and costs.
+      This usually takes a minute or two — please keep this tab open.
+    </p>
+
+  </div>
+
+</div>

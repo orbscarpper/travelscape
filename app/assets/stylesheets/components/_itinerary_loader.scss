@@ -1,0 +1,267 @@
+// Full-screen progress overlay shown while the AI itinerary is generated.
+// The request is synchronous and can run for up to two minutes, so the
+// overlay has to keep the wait feeling alive rather than just spin.
+
+.itinerary-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+
+  background: rgba(18, 26, 20, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  opacity: 0;
+  animation: itinerary-loader-in 0.35s ease forwards;
+}
+
+.itinerary-loader[hidden] {
+  display: none;
+}
+
+@keyframes itinerary-loader-in {
+  to { opacity: 1; }
+}
+
+.itinerary-loader.is-closing {
+  animation: itinerary-loader-out 0.3s ease forwards;
+}
+
+@keyframes itinerary-loader-out {
+  to { opacity: 0; }
+}
+
+
+/* CARD */
+
+.itinerary-loader-card {
+  width: 100%;
+  max-width: 470px;
+
+  background: white;
+  border-radius: 26px;
+  padding: 44px 40px 34px;
+  text-align: center;
+
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
+
+  transform: translateY(14px) scale(0.98);
+  animation: itinerary-loader-card-in 0.4s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes itinerary-loader-card-in {
+  to { transform: translateY(0) scale(1); }
+}
+
+
+/* ICON */
+
+.itinerary-loader-icon {
+  position: relative;
+  width: 74px;
+  height: 74px;
+  margin: 0 auto 22px;
+
+  border-radius: 22px;
+  background: #edf2e9;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+}
+
+// Soft halo that keeps breathing for the whole wait.
+.itinerary-loader-icon::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  border: 2px solid #6c8268;
+  opacity: 0;
+  animation: itinerary-loader-halo 2.4s ease-out infinite;
+}
+
+@keyframes itinerary-loader-halo {
+  0%   { transform: scale(1);    opacity: 0.45; }
+  70%  { transform: scale(1.35); opacity: 0; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+.itinerary-loader-icon span {
+  animation: itinerary-loader-drift 3.2s ease-in-out infinite;
+}
+
+@keyframes itinerary-loader-drift {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50%      { transform: translate(3px, -3px) rotate(6deg); }
+}
+
+
+/* COPY */
+
+.itinerary-loader-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #6b8067;
+  margin-bottom: 10px;
+}
+
+.itinerary-loader-card h2 {
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: -0.8px;
+  color: #18221b;
+  margin: 0 0 10px;
+}
+
+.itinerary-loader-status {
+  min-height: 44px;
+  margin: 0 0 20px;
+
+  color: #737a74;
+  font-size: 15px;
+  line-height: 1.6;
+
+  transition: opacity 0.3s ease;
+}
+
+.itinerary-loader-status.is-fading {
+  opacity: 0;
+}
+
+
+/* PROGRESS BAR */
+
+.itinerary-loader-track {
+  position: relative;
+  height: 9px;
+  border-radius: 50px;
+  background: #e8ece4;
+  overflow: hidden;
+}
+
+.itinerary-loader-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 50px;
+  background: linear-gradient(90deg, #4f7d61, #2f7a56);
+  background-size: 100vw 100%;
+
+  transition: width 0.45s cubic-bezier(0.3, 0.8, 0.4, 1);
+}
+
+// Travelling highlight so the bar still reads as "working" while it creeps.
+.itinerary-loader-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-100%);
+  animation: itinerary-loader-shimmer 1.9s ease-in-out infinite;
+}
+
+@keyframes itinerary-loader-shimmer {
+  to { transform: translateX(100%); }
+}
+
+
+/* META ROW */
+
+.itinerary-loader-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-top: 12px;
+
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: #858c86;
+}
+
+.itinerary-loader-percent {
+  font-weight: 700;
+  color: #2f7a56;
+}
+
+
+/* FOOTNOTE */
+
+.itinerary-loader-note {
+  margin: 26px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid #eef1ec;
+
+  font-size: 13px;
+  line-height: 1.6;
+  color: #99a09a;
+}
+
+
+/* DONE STATE */
+
+.itinerary-loader.is-done .itinerary-loader-icon {
+  background: #e2f2e8;
+}
+
+.itinerary-loader.is-done .itinerary-loader-bar::after {
+  animation: none;
+  opacity: 0;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 520px) {
+
+  .itinerary-loader-card {
+    padding: 34px 26px 28px;
+    border-radius: 22px;
+  }
+
+  .itinerary-loader-card h2 {
+    font-size: 23px;
+  }
+
+}
+
+
+/* MOTION PREFERENCES */
+// The bar itself still moves: it is the information, not the decoration.
+
+@media (prefers-reduced-motion: reduce) {
+
+  .itinerary-loader,
+  .itinerary-loader-card,
+  .itinerary-loader-icon::after,
+  .itinerary-loader-icon span,
+  .itinerary-loader-bar::after {
+    animation: none;
+  }
+
+  .itinerary-loader {
+    opacity: 1;
+  }
+
+  .itinerary-loader-card {
+    transform: none;
+  }
+
+  .itinerary-loader-bar::after {
+    opacity: 0;
+  }
+
+}

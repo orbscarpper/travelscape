@@ -1,4 +1,8 @@
-<div class="trip-page">
+<div class="trip-page"
+     data-controller="itinerary-loader"
+     data-itinerary-loader-destination-value="<%= @trip.destination %>">
+
+  <%= render "shared/itinerary_loader" %>
 
   <!-- Header -->
 
@@ -178,7 +182,8 @@
             <%= button_to "↻ Regenerate",
                           trip_itinerary_path(@trip),
                           method: :post,
-                          class: "regenerate-button" %>
+                          class: "regenerate-button",
+                          form: { data: { action: "turbo:submit-start->itinerary-loader#start turbo:submit-end->itinerary-loader#finish" } } %>
           <% end %>
 
           <button type="button"
@@ -378,7 +383,8 @@
           <%= button_to "Generate my itinerary →",
                         trip_itinerary_path(@trip),
                         method: :post,
-                        class: "generate-button" %>
+                        class: "generate-button",
+                        form: { data: { action: "turbo:submit-start->itinerary-loader#start turbo:submit-end->itinerary-loader#finish" } } %>
 
         </div>
 
