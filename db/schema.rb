@@ -11,6 +11,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[8.1].define(version: 2026_09_03_230044) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_02_133653) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -60,8 +61,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_230044) do
   create_table "chats", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "model_id"
+    t.bigint "trip_id"
     t.datetime "updated_at", null: false
     t.index ["model_id"], name: "index_chats_on_model_id"
+    t.index ["trip_id"], name: "index_chats_on_trip_id"
   end
 
   create_table "itinerary_days", force: :cascade do |t|
@@ -162,6 +165,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_230044) do
   add_foreign_key "activities", "itinerary_days"
   add_foreign_key "activities", "users"
   add_foreign_key "chats", "models"
+  add_foreign_key "chats", "trips"
   add_foreign_key "itinerary_days", "trips"
   add_foreign_key "messages", "chats"
   add_foreign_key "messages", "models"

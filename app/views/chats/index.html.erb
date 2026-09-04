@@ -1,0 +1,34 @@
+<div class="chats-page">
+  <div class="chats-container">
+
+    <div class="chats-header">
+      <h1>Chats about <%= @trip.title %></h1>
+
+      <%= link_to "← Back to trip",
+                  trip_path(@trip),
+                  class: "chats-back" %>
+    </div>
+
+    <% if @chats.any? %>
+      <div class="chats-list">
+        <% @chats.each do |chat| %>
+          <%= link_to trip_chat_path(@trip, chat),
+                      class: "chat-card" do %>
+
+            <span class="chat-card-title">
+              Chat #<%= chat.id %>
+            </span>
+
+            <span class="chat-card-arrow">→</span>
+
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="no-chats">
+        <p>No chats yet.</p>
+      </div>
+    <% end %>
+
+  </div>
+</div>

@@ -22,6 +22,19 @@
 
 </div>
 ```
+      <div class="trip-actions">
+  <%= button_to "Chat with AI",
+                trip_chats_path(@trip),
+                method: :post,
+                class: "chat-button" %>
+
+  <%= link_to "View chats",
+              trip_chats_path(@trip),
+              class: "view-chats-button" %>
+</div>
+
+    </div>
+  </div>
 
   </div>
 
@@ -543,6 +556,43 @@
 
 
   /* BUTTONS */
+
+  .trip-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.chat-button,
+.view-chats-button {
+  display: inline-block;
+  border-radius: 50px;
+  padding: 13px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.chat-button {
+  background: white;
+  color: #18221b;
+  border: none;
+}
+
+.chat-button:hover {
+  background: #edf2e9;
+}
+
+.view-chats-button {
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.view-chats-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
 
   .regenerate-button {
     border: 1px solid #d9ded7;

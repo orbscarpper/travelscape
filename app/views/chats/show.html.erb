@@ -1,0 +1,38 @@
+<div class="chat-page">
+  <div class="chat-container">
+
+    <div class="chat-header">
+      <h1>Chat about <%= @trip.title %></h1>
+
+      <%= link_to "← Back to chats",
+                  trip_chats_path(@trip),
+                  class: "chat-back" %>
+    </div>
+
+    <div class="chat-window">
+      <% if @messages.any? %>
+        <% @messages.each do |message| %>
+          <div class="message <%= message.role == "user" ? "message-user" : "message-assistant" %>">
+            <strong><%= message.role.capitalize %></strong>
+            <p><%= message.content %></p>
+          </div>
+        <% end %>
+      <% else %>
+        <p>No messages yet.</p>
+      <% end %>
+
+      <%= form_with url: trip_chat_messages_path(@trip, @chat),
+                    method: :post,
+                    class: "chat-form" do |form| %>
+
+        <%= form.text_area :content,
+                           placeholder: "Ask something about your trip...",
+                           rows: 3 %>
+
+        <%= form.submit "Send" %>
+
+      <% end %>
+    </div>
+
+  </div>
+</div>
