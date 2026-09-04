@@ -5,279 +5,303 @@
   <div class="trip-header">
     <div class="header-inner">
 
-```
-  <%= link_to "← My trips", trips_path, class: "back-link" %>
+      <%= link_to "← My trips", trips_path, class: "back-link" %>
 
-  <div class="trip-badge">
-    ✦ Your adventure
+      <div class="trip-badge">
+        ✦ Your adventure
+      </div>
+
+      <h1><%= @trip.title %></h1>
+
+      <% if @trip.description.present? %>
+        <p class="trip-description">
+          <%= @trip.description %>
+        </p>
+      <% end %>
+
+      <div class="trip-actions">
+        <%= button_to "Chat with AI",
+                      trip_chats_path(@trip),
+                      method: :post,
+                      class: "chat-button" %>
+
+        <%= link_to "View chats",
+                    trip_chats_path(@trip),
+                    class: "view-chats-button" %>
+      </div>
+
+    </div>
   </div>
 
-  <h1><%= @trip.title %></h1>
-
-  <% if @trip.description.present? %>
-    <p class="trip-description">
-      <%= @trip.description %>
-    </p>
-  <% end %>
-
-</div>
-```
-
-  </div>
 
   <!-- Main Content -->
 
   <div class="trip-container">
 
-```
-<!-- Trip Details -->
-<div class="details-grid">
+    <!-- Trip Details -->
 
-  <div class="detail-card">
-    <div class="detail-icon">📅</div>
+    <div class="details-grid">
 
-    <div>
-      <span class="detail-label">Dates</span>
+      <div class="detail-card">
+        <div class="detail-icon">📅</div>
 
-      <strong>
-        <%= @trip.start_date.strftime("%d %B %Y") %>
-        –
-        <%= @trip.end_date.strftime("%d %B %Y") %>
-      </strong>
-    </div>
-  </div>
+        <div>
+          <span class="detail-label">Dates</span>
 
-
-  <div class="detail-card">
-    <div class="detail-icon">💰</div>
-
-    <div>
-      <span class="detail-label">Budget</span>
-
-      <strong>
-        €<%= @trip.budget %>
-      </strong>
-    </div>
-  </div>
+          <strong>
+            <%= @trip.start_date.strftime("%d %B %Y") %>
+            –
+            <%= @trip.end_date.strftime("%d %B %Y") %>
+          </strong>
+        </div>
+      </div>
 
 
-  <div class="detail-card">
-    <div class="detail-icon">✨</div>
+      <div class="detail-card">
+        <div class="detail-icon">💰</div>
 
-    <div>
-      <span class="detail-label">Travel style</span>
+        <div>
+          <span class="detail-label">Budget</span>
 
-      <strong>
-        <%= @trip.travel_style.presence || "Not specified" %>
-      </strong>
-    </div>
-  </div>
-
-
-  <div class="detail-card">
-    <div class="detail-icon">👥</div>
-
-    <div>
-      <span class="detail-label">Travelling with</span>
-
-      <strong>
-        <%= @trip.traveling_with.presence || "Not specified" %>
-      </strong>
-    </div>
-  </div>
-
-</div>
+          <strong>
+            €<%= @trip.budget %>
+          </strong>
+        </div>
+      </div>
 
 
-<!-- Map -->
+      <div class="detail-card">
+        <div class="detail-icon">✨</div>
 
-<div class="trip-map-container">
+        <div>
+          <span class="detail-label">Travel style</span>
 
-  <div class="section-heading">
-
-    <div>
-
-      <span class="section-badge">
-        ✦ MAP
-      </span>
-
-      <h2>Your trip map</h2>
-
-      <p>
-        Explore the places in your itinerary.
-      </p>
-
-    </div>
-
-  </div>
+          <strong>
+            <%= @trip.travel_style.presence || "Not specified" %>
+          </strong>
+        </div>
+      </div>
 
 
-  <div
-    data-controller="map"
-    data-map-api-key-value="<%= ENV['MAPBOX_API_KEY'] %>"
-    data-map-markers-value="<%= @trip.itinerary_days
-      .flat_map(&:activities)
-      .filter { |activity| activity.latitude.present? && activity.longitude.present? }
-      .map { |activity|
-        {
-          latitude: activity.latitude,
-          longitude: activity.longitude,
-          location: activity.location
-        }
-      }
-      .to_json %>"
-    class="trip-map">
-  </div>
+      <div class="detail-card">
+        <div class="detail-icon">👥</div>
 
-</div>
+        <div>
+          <span class="detail-label">Travelling with</span>
 
-
-<!-- Itinerary -->
-
-<div class="itinerary-section">
-
-  <div class="section-heading">
-
-    <div>
-
-      <span class="section-badge">
-        ✦ AI PLANNER
-      </span>
-
-      <h2>Your itinerary</h2>
-
-      <p>
-        Your personalized travel plan.
-      </p>
+          <strong>
+            <%= @trip.traveling_with.presence || "Not specified" %>
+          </strong>
+        </div>
+      </div>
 
     </div>
 
 
-    <% if @trip.itinerary_days.any? %>
+    <!-- Map -->
 
-      <%= button_to "↻ Regenerate",
-                    trip_itinerary_path(@trip),
-                    method: :post,
-                    class: "regenerate-button" %>
+    <div class="trip-map-container">
 
-    <% end %>
+      <div class="section-heading">
 
-  </div>
+        <div>
 
+          <span class="section-badge">
+            ✦ MAP
+          </span>
 
-  <% if @trip.itinerary_days.any? %>
+          <h2>Your trip map</h2>
 
-    <!-- Days -->
+          <p>
+            Explore the places in your itinerary.
+          </p>
 
-    <div class="days-list">
+        </div>
 
-      <% @trip.itinerary_days.each_with_index do |day, index| %>
-
-        <div class="day-card">
-
-          <!-- Day Header -->
-
-          <div class="day-header">
-
-            <div class="day-number">
-
-              <span>DAY</span>
-
-              <strong>
-                <%= index + 1 %>
-              </strong>
-
-            </div>
+      </div>
 
 
-            <div class="day-title">
+      <div
+        data-controller="map"
+        data-map-api-key-value="<%= ENV['MAPBOX_API_KEY'] %>"
+        data-map-markers-value="<%= @trip.itinerary_days
+          .flat_map(&:activities)
+          .filter { |activity| activity.latitude.present? && activity.longitude.present? }
+          .map { |activity|
+            {
+              latitude: activity.latitude,
+              longitude: activity.longitude,
+              location: activity.location
+            }
+          }
+          .to_json %>"
+        class="trip-map">
+      </div>
 
-              <h3>
-                Day <%= index + 1 %>
-              </h3>
-
-              <% if day.respond_to?(:date) && day.date.present? %>
-
-                <p>
-                  <%= day.date.strftime("%A, %d %B %Y") %>
-                </p>
-
-              <% end %>
-
-            </div>
-
-          </div>
-
-
-          <!-- Activities -->
-
-          <% if day.respond_to?(:activities) && day.activities.any? %>
-
-            <div class="activities-list">
-
-              <% day.activities.each do |activity| %>
-
-                <div class="activity-card">
-
-                  <div class="activity-dot"></div>
+    </div>
 
 
-                  <div class="activity-content">
+    <!-- Itinerary -->
 
-                    <!-- Location -->
+    <div class="itinerary-section">
 
-                    <% if activity.location.present? %>
+      <div class="section-heading">
 
-                      <h4>
-                        📍 <%= activity.location %>
-                      </h4>
+        <div>
 
-                    <% else %>
+          <span class="section-badge">
+            ✦ AI PLANNER
+          </span>
 
-                      <h4>
-                        Activity
-                      </h4>
+          <h2>Your itinerary</h2>
 
-                    <% end %>
+          <p>
+            Your personalized travel plan.
+          </p>
+
+        </div>
 
 
-                    <!-- Time -->
+        <% if @trip.itinerary_days.any? %>
 
-                    <% if activity.start_time.present? || activity.end_time.present? %>
+          <%= button_to "↻ Regenerate",
+                        trip_itinerary_path(@trip),
+                        method: :post,
+                        class: "regenerate-button" %>
 
-                      <div class="activity-time">
+        <% end %>
 
-                        <% if activity.start_time.present? %>
-                          <%= activity.start_time.strftime("%H:%M") %>
+      </div>
+
+
+      <% if @trip.itinerary_days.any? %>
+
+        <!-- Days -->
+
+        <div class="days-list">
+
+          <% @trip.itinerary_days.each_with_index do |day, index| %>
+
+            <div class="day-card">
+
+              <!-- Day Header -->
+
+              <div class="day-header">
+
+                <div class="day-number">
+
+                  <span>DAY</span>
+
+                  <strong>
+                    <%= index + 1 %>
+                  </strong>
+
+                </div>
+
+
+                <div class="day-title">
+
+                  <h3>
+                    Day <%= index + 1 %>
+                  </h3>
+
+                  <% if day.respond_to?(:date) && day.date.present? %>
+
+                    <p>
+                      <%= day.date.strftime("%A, %d %B %Y") %>
+                    </p>
+
+                  <% end %>
+
+                </div>
+
+              </div>
+
+
+              <!-- Activities -->
+
+              <% if day.respond_to?(:activities) && day.activities.any? %>
+
+                <div class="activities-list">
+
+                  <% day.activities.each do |activity| %>
+
+                    <div class="activity-card">
+
+                      <div class="activity-dot"></div>
+
+
+                      <div class="activity-content">
+
+                        <!-- Location -->
+
+                        <% if activity.location.present? %>
+
+                          <h4>
+                            📍 <%= activity.location %>
+                          </h4>
+
+                        <% else %>
+
+                          <h4>
+                            Activity
+                          </h4>
+
                         <% end %>
 
-                        <% if activity.start_time.present? && activity.end_time.present? %>
-                          –
+
+                        <!-- Time -->
+
+                        <% if activity.start_time.present? || activity.end_time.present? %>
+
+                          <div class="activity-time">
+
+                            <% if activity.start_time.present? %>
+                              <%= activity.start_time.strftime("%H:%M") %>
+                            <% end %>
+
+                            <% if activity.start_time.present? && activity.end_time.present? %>
+                              –
+                            <% end %>
+
+                            <% if activity.end_time.present? %>
+                              <%= activity.end_time.strftime("%H:%M") %>
+                            <% end %>
+
+                          </div>
+
                         <% end %>
 
-                        <% if activity.end_time.present? %>
-                          <%= activity.end_time.strftime("%H:%M") %>
+
+                        <!-- Cost -->
+
+                        <% if activity.estimated_cost.present? %>
+
+                          <div class="activity-cost">
+
+                            💶 Estimated cost:
+                            €<%= activity.estimated_cost %>
+
+                          </div>
+
                         <% end %>
 
                       </div>
 
-                    <% end %>
+                    </div>
+
+                  <% end %>
+
+                </div>
 
 
-                    <!-- Cost -->
+              <% else %>
 
-                    <% if activity.estimated_cost.present? %>
+                <div class="no-activities">
 
-                      <div class="activity-cost">
-
-                        💶 Estimated cost:
-                        €<%= activity.estimated_cost %>
-
-                      </div>
-
-                    <% end %>
-
-                  </div>
+                  <p>
+                    No activities have been added for this day yet.
+                  </p>
 
                 </div>
 
@@ -285,18 +309,35 @@
 
             </div>
 
-
-          <% else %>
-
-            <div class="no-activities">
-
-              <p>
-                No activities have been added for this day yet.
-              </p>
-
-            </div>
-
           <% end %>
+
+        </div>
+
+
+      <% else %>
+
+        <!-- Empty Itinerary -->
+
+        <div class="empty-itinerary">
+
+          <div class="empty-icon">
+            ✈️
+          </div>
+
+          <h3>
+            Your itinerary is waiting
+          </h3>
+
+          <p>
+            Let our AI planner create a personalized itinerary
+            based on your trip details.
+          </p>
+
+
+          <%= button_to "Generate my itinerary →",
+                        trip_itinerary_path(@trip),
+                        method: :post,
+                        class: "generate-button" %>
 
         </div>
 
@@ -305,52 +346,20 @@
     </div>
 
 
-  <% else %>
+    <!-- Bottom Navigation -->
 
-    <!-- Empty Itinerary -->
+    <div class="bottom-actions">
 
-    <div class="empty-itinerary">
-
-      <div class="empty-icon">
-        ✈️
-      </div>
-
-      <h3>
-        Your itinerary is waiting
-      </h3>
-
-      <p>
-        Let our AI planner create a personalized itinerary
-        based on your trip details.
-      </p>
-
-
-      <%= button_to "Generate my itinerary →",
-                    trip_itinerary_path(@trip),
-                    method: :post,
-                    class: "generate-button" %>
+      <%= link_to "← Back to my trips",
+                  trips_path,
+                  class: "secondary-button" %>
 
     </div>
-
-  <% end %>
-
-</div>
-
-
-<!-- Bottom Navigation -->
-
-<div class="bottom-actions">
-
-  <%= link_to "← Back to my trips",
-              trips_path,
-              class: "secondary-button" %>
-
-</div>
-```
 
   </div>
 
 </div>
+
 
 <style>
 
@@ -427,6 +436,51 @@
     line-height: 1.7;
     color: #c8d0c9;
     margin: 0;
+  }
+
+
+  /* CHAT BUTTONS */
+
+  .trip-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+  }
+
+
+  .chat-button,
+  .view-chats-button {
+    display: inline-block;
+    border-radius: 50px;
+    padding: 13px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+
+  .chat-button {
+    background: white;
+    color: #18221b;
+    border: none;
+  }
+
+
+  .chat-button:hover {
+    background: #edf2e9;
+  }
+
+
+  .view-chats-button {
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+  }
+
+
+  .view-chats-button:hover {
+    background: rgba(255, 255, 255, 0.1);
   }
 
 
@@ -814,6 +868,12 @@
 
     .trip-map {
       height: 400px;
+    }
+
+
+    .trip-actions {
+      flex-direction: column;
+      align-items: flex-start;
     }
 
   }
