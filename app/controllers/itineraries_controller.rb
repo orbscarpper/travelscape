@@ -1,77 +1,120 @@
+require "net/http"
+require "uri"
+require "json"
+
 class ItinerariesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_trip
 
   def create
-    system_prompt = <<~PROMPT
-      You are TripGen AI, a helpful travel planning assistant.
+  Rails.logger.info "========== ITINERARY CREATE CALLED =========="
+  Rails.logger.info "Trip: #{@trip.id}"
+  Rails.logger.info "Destination: #{@trip.destination}"
+  Rails.logger.info "Dates: #{@trip.start_date} - #{@trip.end_date}"
+  Rails.logger.info "Budget: #{@trip.budget}"
+  Rails.logger.info "Travel style: #{@trip.travel_style}"
+  Rails.logger.info "Traveling with: #{@trip.traveling_with}"
 
-      Your task is to create a realistic daily travel itinerary based on the user's trip information.
+  system_prompt = <<~PROMPT
+    You are TripGen AI, a travel planning assistant.
 
-      Respect:
-      - the trip dates
-      - the user's budget
-      - the travel style
-      - the destination
-      - the trip description
+    Your job is to create a complete travel itinerary.
 
-      Create practical activities with realistic times and estimated costs.
+    IMPORTANT RULES:
 
-      Return ONLY valid JSON.
-      Do not include Markdown.
-      Do not include explanations outside the JSON.
+    1. Return ONLY valid JSON.
+    2. The top-level JSON object MUST contain a key called "days".
+    3. "days" MUST be an array.
+    4. Create exactly one day for every date of the trip.
+    5. Each day MUST contain:
+       - day_number
+       - date
+       - title
+       - activities
+    6. Each activity MUST contain:
+       - start_time
+       - end_time
+       - location
+       - estimated_cost
+    7. Only recommend REAL places.
+    8. Never use generic locations such as:
+       - "City center"
+       - "Main attraction"
+       - "Local restaurant"
+       - "Tourist area"
+       - "Nearby bakery"
+       - "your accommodation"
+    9. Every location must be a specific real place.
+    10. Include the city and country in every location.
+    11. Respect the user's budget.
+    12. Respect the user's travel style.
+    13. Respect who the user is travelling with.
+    14. Keep activities geographically close together when possible.
+    15. Use realistic activity times.
+    16. Use realistic estimated costs.
 
-      The JSON must have this structure:
+    The JSON MUST have exactly this structure:
 
-      {
-        "days": [
-          {
-            "day_number": 1,
-            "date": "YYYY-MM-DD",
-            "title": "Day title",
-            "activities": [
-              {
-                "start_time": "09:00",
-                "end_time": "11:00",
-                "location": "Place name",
-                "estimated_cost": 10.0
-              }
-            ]
-          }
-        ]
-      }
-    PROMPT
+    {
+      "days": [
+        {
+          "day_number": 1,
+          "date": "YYYY-MM-DD",
+          "title": "Day title",
+          "activities": [
+            {
+              "start_time": "09:00",
+              "end_time": "11:00",
+              "location": "Louvre Museum, Paris, France",
+              "estimated_cost": 17.0
+            }
+          ]
+        }
+      ]
+    }
+  PROMPT
 
-    chat = Chat.create!(model: "gpt-5-nano")
+  chat = Chat.create!(
+    trip: @trip,
+    model: "gpt-5-nano"
+  )
 
-    chat.with_instructions(system_prompt)
+  chat.with_instructions(system_prompt)
 
-    response = chat.ask(build_prompt)
+  response = chat.ask(build_prompt)
 
-    itinerary = JSON.parse(response.content)
+  Rails.logger.info "========== AI RESPONSE =========="
+  Rails.logger.info response.content
 
-    create_itinerary_records(itinerary)
+  itinerary = JSON.parse(response.content)
 
-    redirect_to trip_itinerary_path(@trip),
-                notice: "Your itinerary has been generated!"
-  rescue RubyLLM::RateLimitError
-    create_demo_itinerary
+  create_itinerary_records(itinerary)
 
-    redirect_to trip_itinerary_path(@trip),
-                notice: "Demo itinerary generated successfully!"
-  rescue JSON::ParserError
-    create_demo_itinerary
+  redirect_to trip_itinerary_path(@trip),
+              notice: "Your AI itinerary has been generated!"
 
-    redirect_to trip_itinerary_path(@trip),
-                notice: "Demo itinerary generated successfully!"
-  rescue StandardError => e
-    Rails.logger.error "Itinerary generation failed: #{e.class}: #{e.message}"
+rescue RubyLLM::RateLimitError => e
+  Rails.logger.error "========== OPENAI ERROR =========="
+  Rails.logger.error e.message
 
-    create_demo_itinerary
+  redirect_to trip_itinerary_path(@trip),
+              alert: "OpenAI error: #{e.message}"
 
-    redirect_to trip_itinerary_path(@trip),
-                notice: "Demo itinerary generated successfully!"
-  end
+rescue JSON::ParserError => e
+  Rails.logger.error "========== JSON ERROR =========="
+  Rails.logger.error e.message
+
+  redirect_to trip_itinerary_path(@trip),
+              alert: "The AI returned invalid JSON."
+
+rescue StandardError => e
+  Rails.logger.error "========== ITINERARY ERROR =========="
+  Rails.logger.error "#{e.class}: #{e.message}"
+  Rails.logger.error e.backtrace.first(10).join("\n")
+
+  redirect_to trip_itinerary_path(@trip),
+              alert: "Itinerary generation failed: #{e.message}"
+end
 
   def show
     @itinerary_days = @trip.itinerary_days.includes(:activities)
@@ -99,26 +142,74 @@ class ItinerariesController < ApplicationController
   end
 
   def build_prompt
-    number_of_days = (@trip.end_date - @trip.start_date).to_i + 1
+  number_of_days = (@trip.end_date - @trip.start_date).to_i + 1
 
-    <<~PROMPT
-      Create a #{number_of_days}-day itinerary for this trip.
+  <<~PROMPT
+    Create a #{number_of_days}-day travel itinerary.
 
-      Trip name: #{@trip.title}
-      Description: #{@trip.description}
-      Start date: #{@trip.start_date}
-      End date: #{@trip.end_date}
-      Budget: €#{@trip.budget}
-      Travel style: #{@trip.travel_style}
-      Travelling with: #{@trip.traveling_with}
+    Trip information:
 
-      Generate one itinerary day for each date from the start date
-      to the end date.
+    Destination: #{@trip.destination}
 
-      Keep the total estimated cost appropriate for the trip budget.
-      Include several useful activities per day.
-    PROMPT
-  end
+    Trip name: #{@trip.title}
+
+    Description: #{@trip.description}
+
+    Start date: #{@trip.start_date}
+
+    End date: #{@trip.end_date}
+
+    Budget: €#{@trip.budget}
+
+    Travel style: #{@trip.travel_style}
+
+    Travelling with: #{@trip.traveling_with}
+
+    Requirements:
+
+    - Generate exactly #{number_of_days} days.
+    - The first day must be #{@trip.start_date}.
+    - The final day must be #{@trip.end_date}.
+    - Every day must have several activities.
+    - Every activity must be a real place.
+    - Every location must include the city and country.
+    - Do not use generic locations.
+    - Keep the total cost appropriate for the €#{@trip.budget} budget.
+    - Follow the #{@trip.travel_style} travel style.
+    - Make activities appropriate for #{@trip.traveling_with}.
+    - Keep nearby activities together geographically.
+
+    VERY IMPORTANT:
+
+    Return ONLY this JSON structure:
+
+    {
+      "days": [
+        {
+          "day_number": 1,
+          "date": "#{@trip.start_date}",
+          "title": "Example day title",
+          "activities": [
+            {
+              "start_time": "09:00",
+              "end_time": "11:00",
+              "location": "Real Place, #{@trip.destination}",
+              "estimated_cost": 10.0
+            }
+          ]
+        }
+      ]
+    }
+
+    Do not return:
+    - "city"
+    - "budget_eur"
+    - "itinerary"
+    - "transport"
+
+    The ONLY top-level key should be "days".
+  PROMPT
+end
 
   def create_itinerary_records(itinerary)
     @trip.itinerary_days.destroy_all
@@ -131,57 +222,55 @@ class ItinerariesController < ApplicationController
       )
 
       day.fetch("activities").each do |activity|
+        location = activity.fetch("location")
+
+        coordinates = geocode_location(location)
+
         itinerary_day.activities.create!(
           user: current_user,
           start_time: Time.zone.parse(activity.fetch("start_time")),
           end_time: Time.zone.parse(activity.fetch("end_time")),
-          location: activity.fetch("location"),
+          location: location,
+          latitude: coordinates&.first,
+          longitude: coordinates&.last,
           estimated_cost: activity.fetch("estimated_cost")
         )
       end
     end
   end
 
-  def create_demo_itinerary
-    @trip.itinerary_days.destroy_all
+  def geocode_location(location)
+    return nil if location.blank?
 
-    current_date = @trip.start_date
-    day_number = 1
+    url = URI("https://api.mapbox.com/search/geocode/v6/forward")
 
-    while current_date <= @trip.end_date
-      day = @trip.itinerary_days.create!(
-        date: current_date,
-        day_number: day_number,
-        title: "Day #{day_number}"
-      )
+    params = {
+      q: location,
+      access_token: ENV.fetch("MAPBOX_API_KEY"),
+      limit: 1
+    }
 
-      day.activities.create!(
-        user: current_user,
-        start_time: Time.zone.parse("09:00"),
-        end_time: Time.zone.parse("11:00"),
-        location: "Main attraction",
-        estimated_cost: 10
-      )
+    url.query = URI.encode_www_form(params)
 
-      day.activities.create!(
-        user: current_user,
-        start_time: Time.zone.parse("12:00"),
-        end_time: Time.zone.parse("14:00"),
-        location: "Local restaurant",
-        estimated_cost: 15
-      )
+    response = Net::HTTP.get_response(url)
 
-      day.activities.create!(
-        user: current_user,
-        start_time: Time.zone.parse("15:00"),
-        end_time: Time.zone.parse("18:00"),
-        location: "City center",
-        estimated_cost: 0
-      )
-
-      current_date += 1.day
-      day_number += 1
+    unless response.is_a?(Net::HTTPSuccess)
+      Rails.logger.error "Mapbox error: #{response.code}"
+      return nil
     end
+
+    data = JSON.parse(response.body)
+
+    feature = data["features"]&.first
+
+    return nil unless feature
+
+    longitude, latitude = feature["geometry"]["coordinates"]
+
+    [latitude, longitude]
+  rescue StandardError => e
+    Rails.logger.error "Geocoding failed for #{location}: #{e.message}"
+    nil
   end
 
   def update_activities
