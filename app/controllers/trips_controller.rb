@@ -2,7 +2,7 @@ class TripsController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @trips = current_user.trips
+    @trips = current_user.trips.includes(:itinerary_days)
   end
 
   def show
@@ -49,6 +49,7 @@ class TripsController < ApplicationController
   def trip_params
     params.require(:trip).permit(
       :title,
+      :destination,
       :description,
       :start_date,
       :end_date,

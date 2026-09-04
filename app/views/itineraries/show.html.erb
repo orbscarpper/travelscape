@@ -1,37 +1,69 @@
-<div class="container py-5">
-  <h1><%= @trip.title %> — Itinerary ✈️</h1>
+<div class="itinerary-page">
+  <div class="itinerary-container">
+    <%= link_to "← Back to trip", trip_path(@trip), class: "itinerary-back-link" %>
 
-  <%= link_to "Edit itinerary",
-            edit_trip_itinerary_path(@trip),
-            class: "btn btn-primary mt-4" %>
+    <div class="itinerary-heading">
+      <div>
+        <span class="itinerary-badge">✦ YOUR TRAVEL PLAN</span>
+        <h1><%= @trip.title %></h1>
+        <p>Everything you need for your adventure, in one place.</p>
+      </div>
 
-  <% @itinerary_days.each do |day| %>
-    <div class="card mt-4">
-      <div class="card-body">
-        <h2><%= day.title %></h2>
-        <p><%= day.date.strftime("%d %B %Y") %></p>
+      <div class="itinerary-actions">
+        <%= link_to "Edit itinerary",
+                    edit_trip_itinerary_path(@trip),
+                    class: "itinerary-edit-button" %>
+        <button type="button"
+                class="itinerary-delete-button"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteTripModal">
+          <span aria-hidden="true">⌫</span> Delete trip
+        </button>
+      </div>
+    </div>
+
+    <% @itinerary_days.each do |day| %>
+      <div class="itinerary-day-card">
+        <div class="itinerary-day-heading">
+          <div>
+            <span class="day-number">DAY <%= day.day_number %></span>
+            <h2><%= day.title %></h2>
+          </div>
+          <time datetime="<%= day.date.iso8601 %>"><%= day.date.strftime("%d %B %Y") %></time>
+        </div>
 
         <% day.activities.each do |activity| %>
-          <div class="border-top pt-3 mt-3">
-            <strong>
-              <%= activity.start_time.strftime("%H:%M") %>
-              –
-              <%= activity.end_time.strftime("%H:%M") %>
-            </strong>
-
-            <p class="mb-1">
-              📍 <%= activity.location %>
-            </p>
-
-            <p>
-              Estimated cost: €<%= activity.estimated_cost %>
-            </p>
+          <div class="itinerary-activity">
+            <strong><%= activity.start_time.strftime("%H:%M") %> – <%= activity.end_time.strftime("%H:%M") %></strong>
+            <div>
+              <p>📍 <%= activity.location %></p>
+              <small>Estimated cost: €<%= activity.estimated_cost %></small>
+            </div>
           </div>
         <% end %>
       </div>
-    </div>
-  <% end %>
+    <% end %>
 
-  <%= link_to "Back to trip", trip_path(@trip),
-              class: "btn btn-outline-primary mt-4" %>
+    <div class="modal fade" id="deleteTripModal" tabindex="-1" aria-labelledby="deleteTripModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content itinerary-delete-modal">
+          <div class="modal-header">
+            <div class="delete-modal-icon" aria-hidden="true">!</div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <h2 id="deleteTripModalLabel">Delete this trip?</h2>
+            <p>This will permanently remove <strong><%= @trip.title %></strong>, including its itinerary and any chats. This action cannot be undone.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="itinerary-cancel-button" data-bs-dismiss="modal">Keep trip</button>
+            <%= button_to "Yes, delete it",
+                          trip_path(@trip),
+                          method: :delete,
+                          class: "itinerary-confirm-delete-button" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

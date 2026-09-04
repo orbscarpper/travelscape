@@ -96,11 +96,49 @@
 
             <% end %>
 
+            <button type="button"
+                    class="trip-delete-button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteTripModal-<%= trip.id %>">
+              Delete trip
+            </button>
+
           </div>
 
         <% end %>
 
       </div>
+
+
+      <!-- DELETE CONFIRMATIONS -->
+      <%# Rendered outside .trip-card: the card is transformed on hover,
+          which would break the fixed positioning of a nested modal. %>
+
+      <% @trips.each do |trip| %>
+
+        <div class="modal fade" id="deleteTripModal-<%= trip.id %>" tabindex="-1" aria-labelledby="deleteTripModalLabel-<%= trip.id %>" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content itinerary-delete-modal">
+              <div class="modal-header">
+                <div class="delete-modal-icon" aria-hidden="true">!</div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <h2 id="deleteTripModalLabel-<%= trip.id %>">Delete this trip?</h2>
+                <p>This will permanently remove <strong><%= trip.title %></strong>, including its itinerary and any chats. This action cannot be undone.</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="itinerary-cancel-button" data-bs-dismiss="modal">Keep trip</button>
+                <%= button_to "Yes, delete it",
+                              trip_path(trip),
+                              method: :delete,
+                              class: "itinerary-confirm-delete-button" %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <% end %>
 
 
     <% else %>

@@ -1,6 +1,7 @@
 <div class="trip-page">
 
   <!-- Header -->
+
   <div class="trip-header">
     <div class="header-inner">
 
@@ -19,27 +20,32 @@
       <% end %>
 
       <div class="trip-actions">
-  <%= button_to "Chat with AI",
-                trip_chats_path(@trip),
-                method: :post,
-                class: "chat-button" %>
 
-  <%= link_to "View chats",
-              trip_chats_path(@trip),
-              class: "view-chats-button" %>
-</div>
+        <%= button_to "Chat with AI",
+                      trip_chats_path(@trip),
+                      method: :post,
+                      class: "chat-button" %>
+
+        <%= link_to "View chats",
+                    trip_chats_path(@trip),
+                    class: "view-chats-button" %>
+
+      </div>
 
     </div>
   </div>
 
 
   <!-- Main Content -->
+
   <div class="trip-container">
 
     <!-- Trip Details -->
+
     <div class="details-grid">
 
       <div class="detail-card">
+
         <div class="detail-icon">📅</div>
 
         <div>
@@ -51,10 +57,12 @@
             <%= @trip.end_date.strftime("%d %B %Y") %>
           </strong>
         </div>
+
       </div>
 
 
       <div class="detail-card">
+
         <div class="detail-icon">💰</div>
 
         <div>
@@ -64,10 +72,12 @@
             €<%= @trip.budget %>
           </strong>
         </div>
+
       </div>
 
 
       <div class="detail-card">
+
         <div class="detail-icon">✨</div>
 
         <div>
@@ -77,10 +87,12 @@
             <%= @trip.travel_style.presence || "Not specified" %>
           </strong>
         </div>
+
       </div>
 
 
       <div class="detail-card">
+
         <div class="detail-icon">👥</div>
 
         <div>
@@ -90,17 +102,63 @@
             <%= @trip.traveling_with.presence || "Not specified" %>
           </strong>
         </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- Map -->
+
+    <div class="trip-map-container">
+
+      <div class="section-heading">
+
+        <div>
+
+          <span class="section-badge">
+            ✦ MAP
+          </span>
+
+          <h2>Your trip map</h2>
+
+          <p>
+            Explore the places in your itinerary.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div
+        data-controller="map"
+        data-map-api-key-value="<%= ENV['MAPBOX_API_KEY'] %>"
+        data-map-markers-value="<%= @trip.itinerary_days
+          .flat_map(&:activities)
+          .filter { |activity| activity.latitude.present? && activity.longitude.present? }
+          .map { |activity|
+            {
+              latitude: activity.latitude,
+              longitude: activity.longitude,
+              location: activity.location
+            }
+          }
+          .to_json %>"
+        class="trip-map">
       </div>
 
     </div>
 
 
     <!-- Itinerary -->
+
     <div class="itinerary-section">
 
       <div class="section-heading">
 
         <div>
+
           <span class="section-badge">
             ✦ AI PLANNER
           </span>
@@ -110,18 +168,50 @@
           <p>
             Your personalized travel plan.
           </p>
+
         </div>
 
 
-        <% if @trip.itinerary_days.any? %>
+        <div class="itinerary-header-actions">
 
-          <%= button_to "↻ Regenerate",
-                        trip_itinerary_path(@trip),
-                        method: :post,
-                        class: "regenerate-button" %>
+          <% if @trip.itinerary_days.any? %>
+            <%= button_to "↻ Regenerate",
+                          trip_itinerary_path(@trip),
+                          method: :post,
+                          class: "regenerate-button" %>
+          <% end %>
 
-        <% end %>
+          <button type="button"
+                  class="delete-itinerary-button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteTripModal">
+            Delete trip
+          </button>
 
+        </div>
+
+      </div>
+
+      <div class="modal fade" id="deleteTripModal" tabindex="-1" aria-labelledby="deleteTripModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content itinerary-delete-modal">
+            <div class="modal-header">
+              <div class="delete-modal-icon" aria-hidden="true">!</div>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <h2 id="deleteTripModalLabel">Delete this trip?</h2>
+              <p>This will permanently remove <strong><%= @trip.title %></strong>, including its itinerary and any chats. This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="itinerary-cancel-button" data-bs-dismiss="modal">Keep trip</button>
+              <%= button_to "Yes, delete it",
+                            trip_path(@trip),
+                            method: :delete,
+                            class: "itinerary-confirm-delete-button" %>
+            </div>
+          </div>
+        </div>
       </div>
 
 
@@ -332,8 +422,6 @@
   }
 
 
-  /* HEADER */
-
   .trip-header {
     background: #18221b;
     color: white;
@@ -363,8 +451,8 @@
 
   .trip-badge {
     display: inline-block;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 50px;
     padding: 8px 14px;
     font-size: 12px;
@@ -392,7 +480,50 @@
   }
 
 
-  /* CONTAINER */
+  /* CHAT BUTTONS */
+
+  .trip-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+  }
+
+
+  .chat-button,
+  .view-chats-button {
+    display: inline-block;
+    border-radius: 50px;
+    padding: 13px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+
+  .chat-button {
+    background: white;
+    color: #18221b;
+    border: none;
+  }
+
+
+  .chat-button:hover {
+    background: #edf2e9;
+  }
+
+
+  .view-chats-button {
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+  }
+
+
+  .view-chats-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
 
   .trip-container {
     max-width: 1050px;
@@ -419,7 +550,7 @@
     display: flex;
     align-items: center;
     gap: 14px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
   }
 
 
@@ -449,6 +580,22 @@
   .detail-card strong {
     display: block;
     font-size: 14px;
+  }
+
+
+  /* MAP */
+
+  .trip-map-container {
+    margin-bottom: 70px;
+  }
+
+
+  .trip-map {
+    width: 100%;
+    height: 500px;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
   }
 
 
@@ -491,43 +638,6 @@
 
 
   /* BUTTONS */
-
-  .trip-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 25px;
-}
-
-.chat-button,
-.view-chats-button {
-  display: inline-block;
-  border-radius: 50px;
-  padding: 13px 20px;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.chat-button {
-  background: white;
-  color: #18221b;
-  border: none;
-}
-
-.chat-button:hover {
-  background: #edf2e9;
-}
-
-.view-chats-button {
-  background: transparent;
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-}
-
-.view-chats-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
 
   .regenerate-button {
     border: 1px solid #d9ded7;
@@ -593,7 +703,7 @@
     background: white;
     border-radius: 22px;
     padding: 30px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
   }
 
 
@@ -716,7 +826,7 @@
     border-radius: 25px;
     padding: 70px 30px;
     text-align: center;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
   }
 
 
@@ -794,6 +904,17 @@
 
     .day-card {
       padding: 22px;
+    }
+
+
+    .trip-map {
+      height: 400px;
+    }
+
+
+    .trip-actions {
+      flex-direction: column;
+      align-items: flex-start;
     }
 
   }
