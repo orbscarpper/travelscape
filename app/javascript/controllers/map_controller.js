@@ -20,13 +20,19 @@ export default class extends Controller {
     const map = new mapboxgl.Map({
       container: this.element,
       style: "mapbox://styles/mapbox/streets-v12",
-      center: [firstMarker.longitude, firstMarker.latitude],
+      center: [
+        firstMarker.longitude,
+        firstMarker.latitude
+      ],
       zoom: 12
     })
 
     markers.forEach((marker) => {
       new mapboxgl.Marker()
-        .setLngLat([marker.longitude, marker.latitude])
+        .setLngLat([
+          marker.longitude,
+          marker.latitude
+        ])
         .setPopup(
           new mapboxgl.Popup().setHTML(
             `<strong>${marker.location}</strong>`
